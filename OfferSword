@@ -1,0 +1,30 @@
+//数组中的重复元素
+/*
+要求时间复杂度 O(N)，空间复杂度 O(1)。因此不能使用排序的方法，也不能使用额外的标记数组。
+限定 数组中的元素在0-array.length之间
+1 当每个元素都在元素值为索引的位置上，就不会有重复的元素
+2 当元素不在所要求的的位置上，但元素值为索引的位置上的值与目标元素相等，则找到了重复的元素
+3 当不在位置上的时候就交换到位置上
+*/
+publicboolean Duplication(int [] array,int[] duplication){
+        if(array.length==0||array==null)
+           return false;
+         for(int i=0;i<array.length;i++){
+           while(array[i]!=i){
+              if(array[i]==array[array[i]]){
+              dupliction[0]=a[i];
+              return true;
+              }
+              swap(array,i,array[i]);
+         }
+           
+         }
+            
+         return false;
+         }
+
+private void swap(int[] array,int i,int j){
+      int tmp=array[i];
+      array[i]=array[j];
+      array[j]=tmp;
+}
