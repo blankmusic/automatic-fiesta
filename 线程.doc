@@ -55,7 +55,62 @@ synchronized的底层语义原理
     隐式实现的。
     代码同步块 是有monitorentre和monitorexit指令来实现同步的，在jvm中，对象在内存中的布局分为三块区域，对象头，实例数据，对齐填充。
     
-    
+         monitorentre:
+             每个对象有一个monitor,即监视器，当且仅当monitor被占用时，这个monitor就被锁住了。线程执行monitorentre指令是为了尝试获取
+             该monitor的所有权，过程为：
+             1 如果一个monitor的进入数为0，那么该线程直接进入monitor，并且将monitor进入数置1，该线程成为该monitor的所有者。
+             2 如果该进程已占用该monitor，则直接进入，并且monitor进入数加1.
+             3 若该线程未曾占有该monitor，即该monitor被其他的线程占有，那么该线程阻塞，直到该monitor的进入数为0，此时该线程
+             会继续尝试获取该monitor
+        monitorexit：
+              执行monitorexit的线程必须是已拥有该monitor的线程，执行monitorexit指令后，该monitor的进入数见1，直到该monitor的进入数为0
+              此时该线程不再是该monitor的拥有者，其他被阻塞进入该monitor的线程可以尝试获取该monitor的所有权。
+              
+        volatile和synchronized的区别
+        
+          volatile和synchronized的特点
+             首先需要理解线程安全的两个方面：执行控制和内存可见
+             执行控制的目的：
+             是控制代码执行的顺序记忆是否可以并发执行，
+             内存可见：
+             控制的是线程执行结果在内存中对其他现成的可见性。
+             根据java的内存模型的实现，线程在具体执行时，会先拷贝主内存数据到线程本地（CPU缓存），操作完成后再把结果从线程本地刷新
+             到主内存。
+             Synchronized 关键字解决的是执行控制的问题，他会阻止其他线程获取当前对象的监控锁，这样就使得当前对象中被sychronized保护的
+             代码块无法被其他的线程访问，也就无法并发执行。更重要的是synchronized关键字会建立一个内存屏障，内存屏障保证了所有的CPU操作
+             结果都会直接刷新到主内存中，从而保证了内存可见性，同时也使得鲜活的这个锁的线程的所有操作，都happens-before于随后获得这个锁
+             的所有线程的操作。
+             
+             volatile关键字解决的是内存的可见性的问题，会使得所有对volatile变量的读写都会直接刷新到主内存，即保证了变量的可见性。这样
+             就能满足一些对变量可见性有要求，但对读取顺序没有要求需求。使用volatile关键之仅仅能实现对原始变量的原子性（intx short long boolean等）
+             ，但需要特别注意的是，volatile不能保证对符合操作的原子性，即使是i++实际上也是由多个原子操作组成的，read i；inc，write i，
+             加入多线线程同时执行i++，volatile只能保证它们执行的i是同一块内存，但依然可能出现写入脏数据的情况，在java5中提供了原子数据类型
+             atomic wrapper class，对它们的increase之类的操作都是原子性操作，不需要使用synchronized关键字。
+             
+             
+             对于volatile关键字 当且仅当满足如下条件时使用
+             1 对变量的写入操作不依赖变量的当前值，或者你确保只有单个线程更新变量的值。
+             2 该变量没有包含在具有其他变量的不变式中。
+             
+        volatile和synchronized的区别
+             volatile的本质是在告诉jvm当前的变量在工作内存中的值是不确定的，需要从主内存中读取；synchronized则是锁定当前变量，使得只有
+             当前线程可以访问该变量，其他线程被阻塞。
+             volatile仅仅能使用在变量级别；synchronized可以使用在变量 方法和类级别。
+             volatile仅能实现变量的修改的可见性，不能保证原子性；二synchronized可以保证变量的修改可见性和原子性。
+             volatile不会造成线程阻塞；所以吃肉你这都可能会造成线程的阻塞。
+             volatile标记的变量不会被编译器优化；sychronized标记的变量可以被编译器优化。
+             
+             
+             
+             
+             
+             
+             
+             
+             
+             
+             
+             
     
     
     
