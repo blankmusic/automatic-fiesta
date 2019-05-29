@@ -1,0 +1,5 @@
+区别：interrupted会将中断状态清除，isinterruped不会清除中断状态。
+java多线程中的中断机制是利用内部标识符来实现的。
+调用Thread.interrupt()来中断一个线程就会设置中断标识符为true。当中断线程调用静态方法Thread.interrupted(）来检查中断
+状态的时候，中断状态会被清零。而非静态方法isinterrupted（）用来查询其他线程的中断状态并不会改变中断状态标识。简单地说，任何
+跑出interruException异常的方法都会将中断状态清零。无论如何，一个线程的中断状态有可能被其他的线程调用中断来改变。
