@@ -1,0 +1,22 @@
+ThreadLocal和Synchronized的联系和区别
+  相同点：ThreadLocal和Synchronized都是为了解决多线程中相同变量的访问冲突问题。
+  不同点： synchronized同步机制采用了以时间换空间的方式，仅提供一份变量，让不同的线程排队访问。
+        ThreadLocal采用了以空间换时间的方式，每一个线程都提供一份变量，因此可以同时访问而不受影响。
+        以时间换空间的-->即加锁的方式，某个区域代码或者变量只有一份，节省了内存，但是会形成很多线程排队等待的情况，
+        因此浪费了时间而节省了空间。
+        以空间换时间-->为每个线程都提供一个变量，多开销一些内存，但是线程不用等待，所以可以一起执行而相互之间互不影响。
+        
+   ThreadLocal 使用场合 主要用来解决多个线程中数据因并发产生的数据不一致问题。ThreadLocal为每个线程并发访问的数据提供
+        一个副本，通过副本来运行业务。这样的结果是耗费了内存，而大大减少了线程同步带来的性能消耗，而减少了线程并发控制的
+        复杂度。
+        ThreadLocal不能使用原子类型，只能使用Object类型。ThreadLocal的使用比synchronized简单很多。
+   Threadlocal he synchronized 存在本质的区别，synchronized是利用锁的机制，是变量或代码块在某个时刻只能被一个线程访问，
+   而ThreadLlocal为每个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，这样就隔离了多个线程对数据的共享。
+   而synchronized正好相反，它用于多个线程间通信时能够共享数据。
+   
+        Synchronized 用于线程间数据共享，ThreadLocal用于线程间的数据隔离。
+    
+         当然ThreadLocal并不能代替synchronized，它们处理不同的问题领域。
+         sychronized应用于实现同步机制，比ThreadLocal更加复杂。ThreadLocal是解决线程安全问题的一个很好地思路，它通过为每个线程提供一
+    个独立的变量副本解决了变量并发访问的冲突问题。在很多情况下，使用ThreadLocal鄙视用synchronized解决线程安全问题题更简单，方便，
+    且结果程序拥有更高的并发性。
