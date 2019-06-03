@@ -1,0 +1,27 @@
+概念
+immutable Objects就是那些一旦被创建，它们的状态就不能被改变的Objects。每次对它们的盖面都是产生了新的immutable的对象，
+而mutableObjects就是那些创建后，转台可以被改变的Objects。
+
+创建方法
+要创建不可变类，要实现下面几个步骤
+1 通过构造方法初始化所有的成员、对变量不要提供setter方法，将所有的的成员声明为私有的，这样就不允许直接访问这些成员
+2 在getter方法中，不直接返回对象本身，二十克隆对象，并返回对象的拷贝。
+
+不可变的类型：
+final关键字修饰的基本数据类型。
+String
+枚举类型
+Number部分子类，Long Double等数值包装类型，BigInteger和BigDecimal等大数据类型。
+       但是同为Number子类型的院子里厄AtomicInteger和Atomiclong则并非不可变的。
+对于集合类型，可以使用Collections.unmdifiableXXX()方法来回去一个不可变的集合。
+            Collenctions.unmodifiedXXX(0对原始的集合进行拷贝，需要对集合进行修改的方法都直接抛出异常。
+在多线程的环境下，应当尽量使对象称为不可变，来满足线程安全。
+
+Immutable类的好处：
+1 Immutable对象是线程安全的，可以不被Synchronized就在并发环境中共享
+2 immutable对象简化了程序开发，因为它无需使用额外的锁机制就可以在线程间共享。
+3 immutable对象提高了程序的性能，因为减少了Synchronized的使用
+4 Immutable对象是可以被重复使用的，你可以将它们缓存起来重复使用，就像字符串字
+面量和整型数字一样。你可以使用静态工厂方法来提供类似于valueOf()这样的方法，它可
+以从缓存中返回一个已经存在immutable对象，而不是重新创建一个。
+
