@@ -1,0 +1,2 @@
+1 对返回值的处理不同：execute()不关心返回值；submit()有返回值，Future。
+2 对异常的处理不同：execute会抛出异常；submit方法不会抛出异常。除非调用Future.get()。
