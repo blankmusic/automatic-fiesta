@@ -6,7 +6,8 @@ I am confused.
 抽象 将一类对象的共同特征总结出来构造类的过程，包括数据抽象和行为抽象。抽象只关注对象有哪些行为和属性 不关注这些行为的细节是什么。
 继承 是从已有类继承信息创建新类的过程。
 封装
-多态性 允许不同子类型的对象对同一消息做出不同的响应。简单地说，就是就是用同样的对象引用调用同样的方法但是做了不同的事情。多态性分为，编译时的多态性和运行时的多态性。
+多态性 允许不同子类型的对象对同一消息做出不同的响应。简单地说，就是就是用同样的对象引用调用同样的方法但是做了不同的事情。
+多态性分为，编译时的多态性和运行时的多态性。
 
 # Java并发中的AQS
 ```text
@@ -27,7 +28,8 @@ setState()'
 compareAndSetState()
 
 不同定义的同步器争用资源共享的方式也是不同的。
-自定义的同步器在实现的实收只需要实现共享资源state的获取和释放方式即可。至于具体的线程登台队列的维护，AQS已经在顶层实现好了。自定义同步器只要时间以下几种方法
+自定义的同步器在实现的实收只需要实现共享资源state的获取和释放方式即可。至于具体的线程登台队列的维护，
+AQS已经在顶层实现好了。自定义同步器只要时间以下几种方法
 isHeldExclusively():该线程是否正在独占资源，只有用到Condition才会实现它
 tryAcquire(int):独占方式，尝试获取资源，成果返回true，失败false
 tryRelease(int):独占，尝试释放资源，返回同上
@@ -35,13 +37,17 @@ tryAcquireShared(int):共享方式。尝试获取资源。负数表示失败，0
 tryReleaseShared（int）:共享方式。尝试释放资源。如何释放以后允许唤醒后续的等待节点返回true，否则返回false
 
 ReentrantLock的获取和释放锁的具体实现：
-首先，state初始化为0，表示状态未锁定。A线程lock（）时，会调用tryAcquire（）独占该锁，并且state+1，此后其他线程再tryAcquire就会失败。直到A线程unlock（）到state=0（释放锁）为止。其他的线程才有机会获取该所。当然是方之间，A线程是可以重复的获取此锁的state会累加。这就是可重入锁的概念。。
+首先，state初始化为0，表示状态未锁定。A线程lock（）时，会调用tryAcquire（）独占该锁，并且state+1
+此后其他线程再tryAcquire就会失败。直到A线程unlock（）到state=0（释放锁）为止。其他的线程才有机会获取该所。
+当然是方之间，A线程是可以重复的获取此锁的state会累加。这就是可重入锁的概念。。
 但是获取多少次就要释放多少次，保障state的零状态。
 
 CountDowanLatch对锁的获取和释放：
-首先任务分配N个子线程，state也初始化为N和线程数相同。N个线程是并行执行的，每个线程执行完都要countDown()一次，state会CAS减1.等到所有的子线程执行完state=0，会UNpark（）主调用线程，主调用线程从await（）返回后，执行后续动作。
+首先任务分配N个子线程，state也初始化为N和线程数相同。N个线程是并行执行的，每个线程执行完都要countDown()一次，
+state会CAS减1.等到所有的子线程执行完state=0，会UNpark（）主调用线程，主调用线程从await（）返回后，执行后续动作。
 
-一般来说，自定义同步器要么是独占方法，要么是共享方式，他们也只需实现tryAcquire-tryRelease、tryAcquireShared-tryReleaseShared中的一种即可。
+一般来说，自定义同步器要么是独占方法，要么是共享方式，他们也只需实现tryAcquire-tryRelease、
+tryAcquireShared-tryReleaseShared中的一种即可。
 但AQS也支持自定义同步器同时实现独占和共享两种方式，如ReentrantReadWriteLock。
 
 
@@ -53,10 +59,12 @@ Comparable 简介
 
 Comparable 是排序接口。
 
-若一个类实现了Comparable接口，就意味着“该类支持排序”。  即然实现Comparable接口的类支持排序，假设现在存在“实现Comparable接口的类的对象的List列表
+若一个类实现了Comparable接口，就意味着“该类支持排序”。  即然实现Comparable接口的类支持排序，
+假设现在存在“实现Comparable接口的类的对象的List列表
 (或数组)”，则该List列表(或数组)可以通过 Collections.sort（或 Arrays.sort）进行排序。
 
-此外，“实现Comparable接口的类的对象”可以用作“有序映射(如TreeMap)”中的键或“有序集合(TreeSet)”中的元素，而不需要指定比较器。
+此外，“实现Comparable接口的类的对象”可以用作“有序映射(如TreeMap)”中的键或“有序集合(TreeSet)”中的元素，
+而不需要指定比较器。
 
  
 
@@ -71,7 +79,8 @@ public interface Comparable<T> {
     public int compareTo(T o);
 }
 说明：
-假设我们通过 x.compareTo(y) 来“比较x和y的大小”。若返回“负数”，意味着“x比y小”；返回“零”，意味着“x等于y”；返回“正数”，意味着“x大于y”。
+假设我们通过 x.compareTo(y) 来“比较x和y的大小”。若返回“负数”，意味着“x比y小”；返回“零”，
+意味着“x等于y”；返回“正数”，意味着“x大于y”。
 
  
 
@@ -81,9 +90,8 @@ Comparator 简介
 
 Comparator 是比较器接口。
 
-我们若需要控制某个类的次序，而该类本身不支持排序(即没有实现Comparable接口)；那么，我们可以建立一个“该类的比较器”来进行排序。
-这个“比较器”只需要实现Comparator接口即可。
-
+我们若需要控制某个类的次序，而该类本身不支持排序(即没有实现Comparable接口)；那么，
+我们可以建立一个“该类的比较器”来进行排序。这个“比较器”只需要实现Comparator接口即可。
 也就是说，我们可以通过“实现Comparator类来新建一个比较器”，然后通过该比较器对类进行排序。
 
  
@@ -103,11 +111,15 @@ public interface Comparator<T> {
 }
 复制代码
 说明：
-(01) 若一个类要实现Comparator接口：它一定要实现compareTo(T o1, T o2) 函数，但可以不实现 equals(Object obj) 函数。
+(01) 若一个类要实现Comparator接口：它一定要实现compareTo(T o1, T o2) 函数，
+但可以不实现 equals(Object obj) 函数。
 
-        为什么可以不实现 equals(Object obj) 函数呢？ 因为任何类，默认都是已经实现了equals(Object obj)的。 Java中的一切类都是继承于java.lang.Object，在Object.java中实现了equals(Object obj)函数；所以，其它所有的类也相当于都实现了该函数。
+        为什么可以不实现 equals(Object obj) 函数呢？ 因为任何类，默认都是已经实现了
+	equals(Object obj)的。 Java中的一切类都是继承于java.lang.Object，
+	在Object.java中实现了equals(Object obj)函数；所以，其它所有的类也相当于都实现了该函数。
 
-(02) int compare(T o1, T o2) 是“比较o1和o2的大小”。返回“负数”，意味着“o1比o2小”；返回“零”，意味着“o1等于o2”；返回“正数”，意味着“o1大于o2”。
+(02) int compare(T o1, T o2) 是“比较o1和o2的大小”。返回“负数”，意味着“o1比o2小”；
+返回“零”，意味着“o1等于o2”；返回“正数”，意味着“o1大于o2”。
 
  
 
