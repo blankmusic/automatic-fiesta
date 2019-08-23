@@ -35,12 +35,14 @@ tryAcquireShared(int):共享方式。尝试获取资源。负数表示失败，0
 tryReleaseShared（int）:共享方式。尝试释放资源。如何释放以后允许唤醒后续的等待节点返回true，否则返回false
 
 ReentrantLock的获取和释放锁的具体实现：
-首先，state初始化为0，表示状态未锁定。A线程lock（）时，会调用tryAcquire（）独占该锁，并且state+1，此后其他线程再tryAcquire就会失败。直到A线程unlock（）到state=0（释放锁）为止。其他的线程才有机会获取该所。当然是方之间，A线程是可以重复的获取此锁的state会累加。这就是可重入锁的概念。。但是获取多少次就要释放多少次，保障state的零状态。
+首先，state初始化为0，表示状态未锁定。A线程lock（）时，会调用tryAcquire（）独占该锁，并且state+1，此后其他线程再tryAcquire就会失败。直到A线程unlock（）到state=0（释放锁）为止。其他的线程才有机会获取该所。当然是方之间，A线程是可以重复的获取此锁的state会累加。这就是可重入锁的概念。。
+但是获取多少次就要释放多少次，保障state的零状态。
 
 CountDowanLatch对锁的获取和释放：
 首先任务分配N个子线程，state也初始化为N和线程数相同。N个线程是并行执行的，每个线程执行完都要countDown()一次，state会CAS减1.等到所有的子线程执行完state=0，会UNpark（）主调用线程，主调用线程从await（）返回后，执行后续动作。
 
-一般来说，自定义同步器要么是独占方法，要么是共享方式，他们也只需实现tryAcquire-tryRelease、tryAcquireShared-tryReleaseShared中的一种即可。但AQS也支持自定义同步器同时实现独占和共享两种方式，如ReentrantReadWriteLock。
+一般来说，自定义同步器要么是独占方法，要么是共享方式，他们也只需实现tryAcquire-tryRelease、tryAcquireShared-tryReleaseShared中的一种即可。
+但AQS也支持自定义同步器同时实现独占和共享两种方式，如ReentrantReadWriteLock。
 
 
 ```
@@ -51,7 +53,8 @@ Comparable 简介
 
 Comparable 是排序接口。
 
-若一个类实现了Comparable接口，就意味着“该类支持排序”。  即然实现Comparable接口的类支持排序，假设现在存在“实现Comparable接口的类的对象的List列表(或数组)”，则该List列表(或数组)可以通过 Collections.sort（或 Arrays.sort）进行排序。
+若一个类实现了Comparable接口，就意味着“该类支持排序”。  即然实现Comparable接口的类支持排序，假设现在存在“实现Comparable接口的类的对象的List列表
+(或数组)”，则该List列表(或数组)可以通过 Collections.sort（或 Arrays.sort）进行排序。
 
 此外，“实现Comparable接口的类的对象”可以用作“有序映射(如TreeMap)”中的键或“有序集合(TreeSet)”中的元素，而不需要指定比较器。
 
@@ -78,7 +81,8 @@ Comparator 简介
 
 Comparator 是比较器接口。
 
-我们若需要控制某个类的次序，而该类本身不支持排序(即没有实现Comparable接口)；那么，我们可以建立一个“该类的比较器”来进行排序。这个“比较器”只需要实现Comparator接口即可。
+我们若需要控制某个类的次序，而该类本身不支持排序(即没有实现Comparable接口)；那么，我们可以建立一个“该类的比较器”来进行排序。
+这个“比较器”只需要实现Comparator接口即可。
 
 也就是说，我们可以通过“实现Comparator类来新建一个比较器”，然后通过该比较器对类进行排序。
 
@@ -117,4 +121,31 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
 我们不难发现：Comparable相当于“内部比较器”，而Comparator相当于“外部比较器”。
 
  
+```
+# 单例模式
+```text
+保证一个类只有一个实例，并提供一个访问它的全局访问点
+1.构造方法私有化
+2.双重检查实现线程安全
+3.尽量延迟加载
+4.定义静态的单例对象以及getInstance方法
+```
+```java
+//java.lang.Runtime使用的单例模式（源码中为饿汉式,jdk中都是这样，但我们开发尽量用懒汉式）
+//可以用 volatile 实现一个双重检查锁的单例模式：
+public class Singleton{
+	private static volatile Singleton singleton ;
+	private Singleton(){}
+	public static Singleton getInstance(){
+		if(singleton == null){
+			synchronize(Singleton.class){
+			  if(singleton == null){
+			    singleton = new Singleton();
+			  }
+			}
+		}
+		return singleton ;
+	}
+	
+}
 ```
