@@ -135,6 +135,95 @@ Comparable是排序接口；若一个类实现了Comparable接口，就意味着
  
 ```
 # 单例模式
+单例是为了节约资源，对于频繁使用的对象，避免重复创建，减少GC压力。
+
+创建单例模式实例只创建一次，所以构造函数要是private的，是其他类不能创建实例。<br>
+为了访问类中的变量，构造一个public static的getInstance（）方法来获得类中的唯一私有静态变量。<br>
+由于整个系统只有一个单例对象，则需要线程同步。
+
+创建单例模式的方法
+线程安全：懒汉式，饿汉式，双重校验锁
+懒汉式，实例只有在使用的时候才被加载，不使用的时候不加载，使用synchronized保证线程安全
+
+```java
+public class Singleton{
+private static Singleton singleton;
+private Singleton(){};
+public static `synchronized` Singleton getInstance(){
+if(singleton==null) singleton=new Singleton();
+return singleton;
+}
+}
+```
+饿汉式加锁带来的开销大，线程不安全问题主要是由于instance被实例化多次，采用直接实例化instance
+的方式就不会昌盛线程不安全的问题，但是直接实例化的方式也丢失了延迟实例化带来的节约资源的好处
+```java
+public calss{
+private static Singleton instance=new Singleton();
+      private Singleton(){}
+      public static ` ` Singleton getInstance(){
+
+             return instance;
+}
+```
+双重校验锁先判断instance是否已经被实例化，如果没有实例化就对实例化语句进行加锁，同时instance在<br>
+使用的时候才实例化。延迟加载节约资源。在synchronized的锁外面再加一层判断，就可以在对象创建后不再<br>
+进入synchronized同步块，减小了锁的粒度也提高了性能。
+```java
+public class A{
+private  `valotile`  `static` A a;
+private A(){}
+public static A getA(){
+if(a==null){
+synchronized(A.classs){
+ if(a==null) a=new A();
+}
+}
+return a;
+}
+}
+```
+1 如果如下只使用一个if语句,当A和B线程同时访问的时候，实例不存在，虽然有了
+synchronized但两个线程还是会先后创建实例，使得实例不唯一。<br>
+```java
+if(a==null){
+synchronized(A.class){
+ a=new A();
+}
+}
+```
+2 instance 使用volatile是为了防止指令重排，a=new A(),分三步执行，为a 分配内存，2 初始化，3 将a指向内存空间。<br>
+会使上述顺序错乱，在多线程的状态下无法得到正常执行结果。<br>
+3 使用Synchronized（A.class）锁住A类，synchronized（this）所著的是当前市里对象，每个线程都以自身的对象作为锁对象，<br>
+而要实现线程同步必须使得锁唯一。
+
+静态内部类实现
+
+延迟初始化，JVM保证线程安全。
+```java
+public class A{
+priavtte A(){};
+private static class SingletonHolder{
+private static final A=new A();
+}
+public static A getA(){
+return singletonHolder.INSTANCE;}
+}
+```
+枚举类
+
+通过序列化和反序列化实现单例模式，防止反射攻击。  setAccessible()方法将私有构造设为public即为反射攻击。<br>
+在其他的单利模式中使用transient关键字解决反射攻击
+```java
+public enum A{
+INSTANCE;
+private String objname;
+public String getObjName() return objName;
+public void setObjname(String objName) this.objname=objname;
+}
+```
+
+
 ```text
 保证一个类只有一个实例，并提供一个访问它的全局访问点
 1.构造方法私有化
@@ -161,3 +250,10 @@ public class Singleton{
 	
 }
 ```
+Spring中的Bean是单例模式的，Spring实现线程安全是结合ThreadLocal来实现并发，<br>
+但不论是单例还是ThreadLocal都被无法避免内存写的情况。内存泄露是长生命周期的对象引<br>
+用了短生命周期的对象，就会导致到生命周期的对象无法被回收。  <br> 
+ThreadLocal是以<key,value>的形式存储线程，key是弱引用，在下次GC之前就会被回收，<br>
+这可能导致value无法被回收，而产生内存泄露。
+
+
